@@ -2,8 +2,16 @@
 
 IP_ADDRESS=$(hostname -I | awk '{print $1}')
 
+dir_name=$(pwd)
+
+cd .. || { echo "Failed to change directory to parent, continuing..."; }
+
+source venv/bin/activate || { echo "Failed to activate virtual environment, continuing..."; }
+
+cd "$dir_name" || { echo "Failed to change back to original directory, continuing..."; }
+
 while true; do
-    sudo /root/venv/bin/hypercorn --workers 2 --bind "$IP_ADDRESS":6900 --reload main:app
+    hypercorn --workers 2 --bind "$IP_ADDRESS":6900 --reload main:app
     echo "Command crashed or exited. Restarting in 5 seconds..."
     sleep 5
 done

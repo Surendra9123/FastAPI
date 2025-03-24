@@ -1,0 +1,63 @@
+#!/bin/bash
+#echo "Enter the directory name (default: 'shraddhabot'): "
+#read -r dir_name
+#${dir_name:-shraddhabot}
+
+
+if [[ ! -f ".env" ]]; then
+    echo "Error: .env file not found!"
+    exit 1
+fi
+
+# Get the current directory name using 'pwd'
+dir_name=$(pwd)
+
+echo "Step Back directory...."
+cd ..
+
+echo "Checking directory...."
+if [ -d "$dir_name" ]; then
+    :
+else
+    echo "Directory '$dir_name' not found. Exiting. Clone repo from GitHub with custom name '$dir_name'."
+    exit 1
+fi
+
+echo "Updating package list..."
+sudo apt update -y
+
+echo "Install prerequisites..."
+sudo apt install -y software-properties-common
+
+echo "Add the Python 3.12 repository and automatically accept prompts"
+sudo add-apt-repository -y ppa:deadsnakes/ppa
+
+echo "Update the package list again"
+sudo apt update
+
+echo "Upgrading packages..."
+sudo apt upgrade -y
+
+echo "Removing not required packages..."
+sudo apt autoremove -y
+
+echo "Installing Python...."
+sudo apt-get install -y build-essential
+
+echo "Installing Venv...."
+sudo apt-get install -y python3.12-venv
+
+echo "Creating virtual environment...."
+python3.12 -m venv venv
+
+echo "Switching to venv...."
+source venv/bin/activate
+cd "$dir_name"
+
+echo "Installing requirements...."
+pip3 install --no-cache-dir -U python-dotenv
+pip3 install --no-cache-dir -U setuptools wheel pip
+pip3 install --no-cache-dir -r requirements.txt
+
+echo "Starting Bot...."
+bash start

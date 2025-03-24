@@ -1,0 +1,5 @@
+fastapi
+yt_dlp
+aiofiles
+youtube-search
+youtube-search-python
