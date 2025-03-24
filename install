@@ -3,13 +3,6 @@
 #read -r dir_name
 #${dir_name:-shraddhabot}
 
-
-if [[ ! -f ".env" ]]; then
-    echo "Error: .env file not found!"
-    exit 1
-fi
-
-# Get the current directory name using 'pwd'
 dir_name=$(pwd)
 
 echo "Step Back directory...."
