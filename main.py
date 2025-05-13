@@ -18,15 +18,15 @@ async def download_video(request: Request):
         ip_address = ip_address.split(',')[0]
     if request.method == 'POST':
         form_data = await request.form()
-        url = form_data.get('url')
+        url = form_data.get('url', None)
         format = form_data.get('format', 'audio')
-        download = form_data.get('download', 'True') == 'True'
-        api_key = form_data.get('api_key')
+        download = form_data.get('download', True)
+        api_key = form_data.get('api_key', None)
     else:
-        url = request.query_params.get('url')
+        url = request.query_params.get('url', None)
         api_key = request.query_params.get('api_key', None)
         format = request.query_params.get('format', 'audio')
-        download = request.query_params.get('download', 'True') == 'True'
+        download = request.query_params.get('download',True)
     if api_key not in youtube_keys:
         print(f"[{api_key}:Failed]: Invalid API key | {ip_address}")
         return JSONResponse(status_code=401, content={"status": "failed", "error": "Authentication failed: Invalid API key.", "details": "Authentication unsuccessful: The provided API key is invalid. Please contact at @ShraddhaNews for a new key."})
