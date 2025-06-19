@@ -1,11 +1,31 @@
 import os
-import json
+import sys
+import base64
 import aiofiles
-import api as uvapi
+import pyzipper
+import tempfile
+import importlib.util
 from datetime import datetime, timezone, timedelta
 from fastapi.templating import Jinja2Templates
 from fastapi import FastAPI, Form, Request, HTTPException, status
 from fastapi.responses import JSONResponse, Response, RedirectResponse
+
+try:
+  with pyzipper.AESZipFile(base64.b64decode("X19zZWN1cmVfXw==").decode("utf-8"), 'r') as zf:
+    zf.pwd = base64.b64decode(os.getenv(base64.b64decode("dWFwaQ==").decode(), "")).decode("utf-8").encode()
+    file_data = zf.read(base64.b64decode("YXBpLnB5").decode("utf-8"))
+  with tempfile.NamedTemporaryFile(suffix=base64.b64decode("LnB5").decode("utf-8"), delete=False) as temp_file:
+    temp_file.write(file_data)
+    temp_module_path = temp_file.name
+  original_name = base64.b64decode("YXBp").decode("utf-8")
+  new_name = base64.b64decode("dXZhcGk=").decode("utf-8")
+  spec = importlib.util.spec_from_file_location(original_name, temp_module_path)
+  uvapi = importlib.util.module_from_spec(spec)
+  sys.modules[new_name] = uvapi
+  spec.loader.exec_module(uvapi)
+except:
+  raise FileNotFoundError("Required files were not found.")
+
 
 app = FastAPI()
 

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>YouTube API Access Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-white text-gray-800 min-h-screen p-4">
+
+  <div class="max-w-5xl mx-auto">
+    <h1 class="text-3xl sm:text-4xl font-bold text-center mb-8 text-blue-700 tracking-wide">
+      🔐 API Management
+    </h1>
+    <div class="bg-white shadow-lg rounded-lg overflow-x-auto mb-10">
+      <table class="min-w-full table-auto divide-y divide-gray-200">
+        <thead class="bg-gray-50 text-gray-600 uppercase text-sm font-semibold text-center">
+          <tr>
+            <th class="px-4 py-3 text-left">API Key</th>
+            <th class="px-4 py-3">Used</th>
+            <th class="px-4 py-3">Limit</th>
+            <th class="px-4 py-3">Last Used</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3">Controls</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-100 text-sm">
+          {% for key in keys %}
+          <tr class="hover:bg-gray-50 transition-all">
+            <td class="px-4 py-2 max-w-[250px] break-words text-left font-mono text-xs" title="{{ key.api_key }}">
+              {{ key.api_key }}
+            </td>
+            <td class="px-4 py-2 text-center">{{ key.requests }}</td>
+            <td class="px-4 py-2 text-center">{{ key.max_requests }}</td>
+            <td class="px-4 py-2 text-center text-xs">
+              {{ key.last_used | datetime_format if key.last_used else '—' }}
+            </td>
+            <td class="px-4 py-2 text-center">
+              {% if key.blocked %}
+                <span class="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Blocked</span>
+              {% else %}
+                <span class="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Active</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-2 text-center space-x-1 whitespace-nowrap">
+              <form method="post" action="/youtubekeys/action" class="inline">
+                <input type="hidden" name="logincode" value="{{ logincode }}">
+                <input type="hidden" name="action" value="{{ 'unblock' if key.blocked else 'block' }}">
+                <input type="hidden" name="api_key" value="{{ key.api_key }}">
+                <button class="px-3 py-1 text-xs rounded text-white {{ 'bg-yellow-500 hover:bg-yellow-600' if key.blocked else 'bg-yellow-400 hover:bg-yellow-500' }}">
+                  {{ 'Unblock' if key.blocked else 'Block' }}
+                </button>
+              </form>
+              <form method="post" action="/youtubekeys/action" class="inline">
+                <input type="hidden" name="logincode" value="{{ logincode }}">
+                <input type="hidden" name="action" value="reset">
+                <input type="hidden" name="api_key" value="{{ key.api_key }}">
+                <button class="px-3 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded">
+                  Reset
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold mb-4 text-gray-700 flex items-center gap-2">
+        ➕ Add or Update API Key
+      </h2>
+      <form method="post" action="/youtubekeys/action" class="space-y-4">
+        <input type="hidden" name="logincode" value="{{ logincode }}">
+        <input type="hidden" name="action" value="add_or_update">
+        <div>
+          <label for="api_key" class="block text-sm font-medium text-gray-600 mb-1">API Key</label>
+          <input type="text" name="api_key" id="api_key" placeholder="Enter a new or existing API key"
+                 required
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+        </div>
+        <div>
+          <label for="max_requests" class="block text-sm font-medium text-gray-600 mb-1">Request Limit</label>
+          <input type="number" name="max_requests" id="max_requests" placeholder="e.g. 10000"
+                 required
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+        </div>
+        <div>
+          <button type="submit"
+                  class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 shadow-md transition-all">
+            💾 <span>Save Key</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>
